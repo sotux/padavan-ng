@@ -18,6 +18,8 @@
 #ifndef _defaults_h_
 #define _defaults_h_
 
+#include <ralink_board.h>
+
 #define SYS_SHELL		"/bin/sh"
 #define SYS_EXEC_PATH		"/usr/sbin:/usr/bin:/sbin:/bin"
 #define SYS_EXEC_PATH_OPT	"/opt/sbin:/opt/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -33,18 +35,18 @@
 #define DEF_LAN_DHCP_END	"192.168.1.244"
 #define DEF_LAN_MASK		"255.255.255.0"
 
-#define DEF_WLAN_2G_CC		"GB"
-#define DEF_WLAN_5G_CC		"GB"
-#define DEF_WLAN_2G_SSID	"ASUS"
-#define DEF_WLAN_5G_SSID	"ASUS_5G"
-#define DEF_WLAN_2G_GSSID	"ASUS_GUEST"
-#define DEF_WLAN_5G_GSSID	"ASUS_GUEST_5G"
+#define DEF_WLAN_2G_CC		"CN"
+#define DEF_WLAN_5G_CC		"CN"
+#define DEF_WLAN_2G_SSID	BOARD_PID
+#define DEF_WLAN_5G_SSID	BOARD_PID "_5G"
+#define DEF_WLAN_2G_GSSID	BOARD_PID "_GUEST"
+#define DEF_WLAN_5G_GSSID	BOARD_PID "_GUEST_5G"
 #define DEF_WLAN_2G_PSK		"1234567890"
 #define DEF_WLAN_5G_PSK		"1234567890"
 
 #define DEF_ROOT_PASSWORD	"admin"
 #define DEF_SMB_WORKGROUP	"WORKGROUP"
-#define DEF_TIMEZONE		"GMT0"
+#define DEF_TIMEZONE		"CST-8"
 #define DEF_NTP_SERVER0		"pool.ntp.org"
 #define DEF_NTP_SERVER1		"time.nist.gov"
 #ifdef SUPPORT_OPENSSL_EC
