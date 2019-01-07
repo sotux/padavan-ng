@@ -390,6 +390,23 @@ restart_dnscrypt(void)
 }
 #endif
 
+#if defined(APP_VLMCSD)
+void stop_vlmcsd(void){
+	eval("/usr/bin/vlmcsd.sh","stop");
+}
+
+void start_vlmcsd(void){
+	int vlmcsd_mode = nvram_get_int("vlmcsd_enable");
+	if ( vlmcsd_mode == 1)
+		eval("/usr/bin/vlmcsd.sh","start");
+}
+
+void restart_vlmcsd(void){
+	stop_vlmcsd();
+	start_vlmcsd();
+}
+#endif
+
 void
 start_httpd(int restart_fw)
 {
