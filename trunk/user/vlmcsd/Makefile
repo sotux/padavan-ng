@@ -1,0 +1,26 @@
+THISDIR = $(shell pwd)
+SRC_NAME = vlmcsd-svn1112
+SRC_URL = https://codeload.github.com/Wind4/vlmcsd/zip/svn1112
+
+all: extract_test
+	$(MAKE) -C $(SRC_NAME) CC=$(CONFIG_CROSS_COMPILER_ROOT)/bin/mipsel-linux-uclibc-gcc
+	
+download_test: 
+	( if [ ! -f $(THISDIR)/$(SRC_NAME).zip ]; then \
+		wget -t5 --timeout=20 --no-check-certificate -O $(SRC_NAME).zip $(SRC_URL); \
+	fi )
+
+extract_test: download_test
+	( if [ ! -d $(THISDIR)/$(SRC_NAME) ]; then \
+		unzip -qq $(SRC_NAME).zip; \
+		patch -d $(SRC_NAME) -p1 -i ../0001-remove-lto-flag.patch; \
+	fi )
+
+romfs:
+	$(ROMFSINST) -p +x $(THISDIR)/$(SRC_NAME)/bin/vlmcsd /usr/bin/vlmcsd
+	$(ROMFSINST) -p +x $(THISDIR)/vlmcsd.sh /usr/bin/vlmcsd.sh
+
+clean:
+	if [ -f $(SRC_NAME)/Makefile ] ; then \
+		$(MAKE) -C $(SRC_NAME) clean ; \
+	fi ; \
