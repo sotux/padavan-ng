@@ -51,7 +51,6 @@ clean:
 romfs:
 ifeq ($(CONFIG_FIRMWARE_INCLUDE_ARIA_WEB_CONTROL),y)
 	cp -rf ariaweb $(INSTALLDIR)/www
-	cd $(INSTALLDIR)/www/ariaweb && ln -sf /mnt/aria/config/configuration.js configuration.js
 endif
 	$(ROMFSINST) $(SRC_NAME)/src/aria2c /usr/bin/aria2c
 	$(ROMFSINST) -p +x /usr/bin/aria.sh
