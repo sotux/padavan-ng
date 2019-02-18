@@ -17,6 +17,10 @@ configure:
 		--enable-static \
 		--disable-shared \
 		--disable-cpp \
+		--enable-utf8 \
+		--enable-unicode-properties \
+		--enable-pcre16 \
+		--with-match-limit-recursion=16000 \
 		--host=$(HOST_TARGET) \
 		--build=$(HOST_BUILD) ; \
 	)
