@@ -540,8 +540,9 @@ void start_dnscrypt(void);
 void restart_dnscrypt(void);
 #endif
 #if defined(APP_VLMCSD)
+int is_vlmcsd_run(void);
 void stop_vlmcsd(void);
-void start_vlmcsd(void);
+void start_vlmcsd(int);
 void restart_vlmcsd(void);
 #endif
 

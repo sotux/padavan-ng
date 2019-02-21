@@ -391,19 +391,27 @@ restart_dnscrypt(void)
 #endif
 
 #if defined(APP_VLMCSD)
-void stop_vlmcsd(void){
+int
+is_vlmcsd_run(void)
+{
+	return pids("vlmcsd");
+}
+
+void
+stop_vlmcsd(void){
 	eval("/usr/bin/vlmcsd.sh","stop");
 }
 
-void start_vlmcsd(void){
-	int vlmcsd_mode = nvram_get_int("vlmcsd_enable");
-	if ( vlmcsd_mode == 1)
+void
+start_vlmcsd(int is_ap_mode){
+	if (nvram_get_int("vlmcsd_enable") == 1 && !is_ap_mode)
 		eval("/usr/bin/vlmcsd.sh","start");
 }
 
-void restart_vlmcsd(void){
+void
+restart_vlmcsd(void){
 	stop_vlmcsd();
-	start_vlmcsd();
+	start_vlmcsd(get_ap_mode());
 }
 #endif
 
@@ -610,6 +618,11 @@ start_services_once(int is_ap_mode)
 			br_set_stp(IFNAME_BR, 1);
 			br_set_fd(IFNAME_BR, 15);
 		}
+
+#if defined(APP_VLMCSD)
+		if (!is_vlmcsd_run())
+			start_vlmcsd(get_ap_mode());
+#endif
 	} else {
 		start_udpxy(IFNAME_BR);
 #if defined(APP_XUPNPD)
@@ -654,6 +667,9 @@ stop_services(int stopall)
 #endif
 #if defined(APP_DNSCRYPT)
 	stop_dnscrypt();
+#endif
+#if defined(APP_VLMCSD)
+	stop_vlmcsd();
 #endif
 	stop_networkmap();
 	stop_lltd();
