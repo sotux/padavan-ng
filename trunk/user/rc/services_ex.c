@@ -375,6 +375,9 @@ start_dns_dhcpd(int is_ap_mode)
 		fprintf(fp, "dhcp-range=set:%s,%s,%s,%s,%d\n",
 			DHCPD_RANGE_DEF_TAG, dhcp_start, dhcp_end, netmask, nvram_get_int("dhcp_lease"));
 		
+		/* enable dhcp rapid commit */
+		fprintf(fp, "dhcp-rapid-commit\n");
+
 		/* GATEWAY */
 		gw = nvram_safe_get("dhcp_gateway_x");
 		if (!is_valid_ipv4(gw))
