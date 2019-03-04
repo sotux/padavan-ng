@@ -399,19 +399,23 @@ is_vlmcsd_run(void)
 
 void
 stop_vlmcsd(void){
-	eval("/usr/bin/vlmcsd.sh","stop");
+	char* svcs[] = { "vlmcsd", NULL };
+	kill_services(svcs, 3, 1);
 }
 
 void
 start_vlmcsd(int is_ap_mode){
 	if (nvram_get_int("vlmcsd_enable") == 1 && !is_ap_mode)
-		eval("/usr/bin/vlmcsd.sh","start");
+		eval("/usr/bin/vlmcsd");
 }
 
 void
 restart_vlmcsd(void){
 	stop_vlmcsd();
 	start_vlmcsd(get_ap_mode());
+
+	/* add-remove needed dnsmasq params when vlmcsd is enabled-disabled */
+	restart_dhcpd();
 }
 #endif
 

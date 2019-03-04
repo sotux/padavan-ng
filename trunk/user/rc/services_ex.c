@@ -345,6 +345,12 @@ start_dns_dhcpd(int is_ap_mode)
 			    "server=%s#%d\n", nvram_safe_get("dnscrypt_ipaddr"), nvram_get_int("dnscrypt_port"));
 	}
 #endif
+#if defined(APP_VLMCSD)
+	if (!is_ap_mode && nvram_match("vlmcsd_enable", "1")) {
+		fprintf(fp, "srv-host=_vlmcs._tcp.%s,%s.%s,1688,0,100\n", 
+				nvram_safe_get("lan_domain"), nvram_safe_get("computer_name"), nvram_safe_get("lan_domain"));
+	}
+#endif
 	if (!is_ap_mode) {
 		is_dns_used = 1;
 		fprintf(fp, "min-port=%d\n", 4096);
