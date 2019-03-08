@@ -600,6 +600,28 @@ struct nvram_pair router_defaults[] = {
 #if defined (APP_VLMCSD)
 	{ "vlmcsd_enable", "0" },
 #endif
+#if defined (APP_SHADOWSOCKS)
+	{ "ss_enable", "0" },
+	{ "ss_server", "127.0.0.1" },
+	{ "ss_server_port", "8989" },
+	{ "ss_password", "Secret" },
+	{ "ss_method", "rc4-md5" },
+	{ "ss_plugin", "" },
+	{ "ss_plugin_opts", "" },
+	{ "ss_timeout", "60" },
+	{ "ss_reuse_port", "0" },
+	{ "ss_local_port", "1080" },
+	{ "ss_udp", "1" },
+	{ "ss_mtu", "1492" },
+	{ "ss_chromecast", "1" },
+	{ "ss_tunnel_remote", "8.8.4.4:53" },
+	{ "ss_tunnel_local_port", "5353" },
+	{ "ss_tunnel_mtu", "1492" },
+	{ "ss_mode", "1" },
+	{ "ss_router_proxy", "1" },
+	{ "ss_gfwlist_url", "https://cokebar.github.io/gfwlist2dnsmasq/dnsmasq_gfwlist_ipset.conf" },
+	{ "ss_unblocked_sites_dns", "114.114.114.114" },
+#endif
 #if defined(SUPPORT_ZRAM)
 	{ "zram_enable", "0" },
 #endif

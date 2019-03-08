@@ -1265,6 +1265,16 @@ handle_notifications(void)
 			restart_vlmcsd();
 		}
 #endif
+#if defined(APP_SHADOWSOCKS)
+		else if (strcmp(entry->d_name, RCN_RESTART_SHADOWSOCKS) == 0)
+		{
+			restart_ss();
+		}
+		else if (strcmp(entry->d_name, RCN_GFWLIST_UPD) == 0)
+		{
+			update_gfwlist();
+		}
+#endif
 		else if (strcmp(entry->d_name, RCN_RESTART_LLTD) == 0)
 		{
 			restart_lltd();
@@ -1659,6 +1669,11 @@ main(int argc, char **argv)
 		restart_aria();
 	}
 #endif
+#if defined(APP_SHADOWSOCKS)
+	else if (!strcmp(base, "run_shadowsocks")) {
+		restart_ss();
+	}
+#endif
 #if defined(APP_FTPD)
 	else if (!strcmp(base, "stop_ftp")) {
 		stop_ftp();
@@ -1702,6 +1717,11 @@ main(int argc, char **argv)
 #if defined(APP_ARIA)
 	else if (!strcmp(base, "stop_aria")) {
 		stop_aria();
+	}
+#endif
+#if defined(APP_SHADOWSOCKS)
+	else if (!strcmp(base, "stop_shadowsocks")) {
+		stop_ss();
 	}
 #endif
 	else if (!strcmp(base, "start_ddns")) {

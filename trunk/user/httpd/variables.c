@@ -872,6 +872,35 @@
 			{0,0,0,0}
 		};
 
+#if defined(APP_SHADOWSOCKS)
+	struct variable variables_ShadowsocksConf[] = {
+			{"ss_enable", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_server", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_server_port", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_password", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_method", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_plugin", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_plugin_opts", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_local_port", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_reuse_port", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_udp", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_mtu", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_chromecast", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_timeout", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_mode", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_router_proxy", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_unblocked_sites_dns", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_tunnel_remote", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_tunnel_local_port", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_tunnel_mtu", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"ss_gfwlist_url", "", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"shdscks.gfwlist-extra-domain.conf", "File", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"shdscks.gfwlist-extra-ip.conf", "File", NULL, EVM_RESTART_SHADOWSOCKS},
+			{"shdscks.gfwlist-apple-china.conf", "File", NULL, EVM_RESTART_SHADOWSOCKS},
+			{0,0,0,0}
+	};
+#endif
+
 	struct svcLink svcLinks[] = {
 		{"General",			variables_General},
 		{"Storage",			variables_Storage},
@@ -890,6 +919,9 @@
 		{"DeviceSecurity11b",		variables_DeviceSecurity11b},
 		{"WLANAuthentication11a",	variables_WLANAuthentication11a},
 		{"WLANAuthentication11b",	variables_WLANAuthentication11b},
+#if defined(APP_SHADOWSOCKS)
+		{"ShadowsocksConf",		variables_ShadowsocksConf},
+#endif
 		{"LANGUAGE",			variables_Language},
 		{0,0}
 	};
@@ -970,6 +1002,9 @@
 #endif
 #if defined(APP_SMBD) || defined(APP_NMBD)
 		{EVM_RESTART_NMBD,		EVT_RESTART_NMBD,		RCN_RESTART_NMBD,	0},
+#endif
+#if defined(APP_SHADOWSOCKS)
+		{EVM_RESTART_SHADOWSOCKS,	EVT_RESTART_SHADOWSOCKS,	RCN_RESTART_SHADOWSOCKS,  0},
 #endif
 		{EVM_RESTART_FIREWALL,		EVT_RESTART_FIREWALL,		RCN_RESTART_FIREWALL,	0},
 		{0,0,0,0}

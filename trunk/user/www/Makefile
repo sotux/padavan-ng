@@ -134,6 +134,12 @@ ifneq ($(STORAGE_ENABLED),y)
 	rm -rf $(INSTALLDIR)/www/images/AiDisk
 	rm -rf $(INSTALLDIR)/www/images/Tree
 endif
+ifneq ($(CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS),y)
+	rm -f $(INSTALLDIR)/www/Advanced_Shadowsocks_Content.asp
+	rm -f $(INSTALLDIR)/www/Advanced_Shadowsocks_action.asp
+	rm -f $(INSTALLDIR)/www/Advanced_Shadowsocks_server.asp
+	rm -f $(INSTALLDIR)/www/Advanced_Shadowsocks_others.asp
+endif
 
 clean:
 	@echo "Clean www romfs"

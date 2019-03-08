@@ -419,6 +419,65 @@ restart_vlmcsd(void){
 }
 #endif
 
+#if defined(APP_SHADOWSOCKS)
+int
+is_ss_run(void)
+{
+	return pids("ss-redir") || pids("ss-tunnel");
+}
+
+void
+stop_ss(void)
+{
+	eval("/usr/bin/shadowsocks.sh","stop");
+
+	/* add-remove iptables rules when switching-on-off shadowsocks control in WebUI */
+	restart_firewall();
+
+	/* add-remove needed dnsmasq params when shadowsocks is enabled-disabled */
+	restart_dhcpd();
+
+	logmessage(SHADOWSOCKS_LOG_NAME, "service stoped");
+}
+
+void
+start_ss(int is_ap_mode)
+{
+	const char ss_mode_name[][16] = {
+			"Global",
+			"GFWList",
+			"ChnRoute"};
+
+	if (nvram_get_int("ss_enable") == 1) {
+		if (is_ap_mode) {
+			logmessage(SHADOWSOCKS_LOG_NAME, "service will not run in AP mode");
+		} else {
+			eval("/usr/bin/shadowsocks.sh","start");
+			logmessage(SHADOWSOCKS_LOG_NAME, "service started in [%s] mode", ss_mode_name[nvram_get_int("ss_mode")]);
+		}
+	}
+
+	/* add-remove iptables rules when switching-on-off shadowsocks control in WebUI */
+	restart_firewall();
+
+	/* add-remove needed dnsmasq params when shadowsocks is enabled-disabled */
+	restart_dhcpd();
+}
+
+void
+restart_ss(void)
+{
+	stop_ss();
+	start_ss(get_ap_mode());
+}
+
+void
+update_gfwlist(void)
+{
+	eval("/usr/bin/shadowsocks.sh","update");
+}
+#endif
+
 void
 start_httpd(int restart_fw)
 {
@@ -627,6 +686,10 @@ start_services_once(int is_ap_mode)
 		if (!is_vlmcsd_run())
 			start_vlmcsd(get_ap_mode());
 #endif
+#if defined(APP_SHADOWSOCKS)
+		if (!is_ss_run())
+			start_ss(get_ap_mode());
+#endif
 	} else {
 		start_udpxy(IFNAME_BR);
 #if defined(APP_XUPNPD)
@@ -674,6 +737,9 @@ stop_services(int stopall)
 #endif
 #if defined(APP_VLMCSD)
 	stop_vlmcsd();
+#endif
+#if defined(APP_SHADOWSOCKS)
+	stop_ss();
 #endif
 	stop_networkmap();
 	stop_lltd();

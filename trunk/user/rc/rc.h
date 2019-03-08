@@ -103,6 +103,15 @@
 #define MINIUPNPD_CHAIN_IP4_FORWARD	"upnp"
 #define MINIUPNPD_CHAIN_IP6_FORWARD	"upnp"
 
+#if defined(APP_SHADOWSOCKS)
+#define SHADOWSOCKS_LOG_NAME        "shadowsocks"
+#define SHADOWSOCKS_DIR             "/tmp/shadowsocks.d"
+#define GFWLIST_FILE                "gfwlist.conf"
+#define GFWLIST_EXT_DOM_FILE        "gfwlist-extra-domain.conf"
+#define GFWLIST_EXT_IP_FILE         "gfwlist-extra-ip.conf"
+#define GFWLIST_APPLE_CHINA_FILE    "gfwlist-apple-china.conf"
+#endif
+
 // for log message title
 #define LOGNAME				BOARD_NAME
 
@@ -544,6 +553,13 @@ int is_vlmcsd_run(void);
 void stop_vlmcsd(void);
 void start_vlmcsd(int);
 void restart_vlmcsd(void);
+#endif
+#if defined(APP_SHADOWSOCKS)
+int is_ss_run(void);
+void stop_ss(void);
+void start_ss(int);
+void restart_ss(void);
+void update_gfwlist(void);
 #endif
 
 /* services_ex.c */

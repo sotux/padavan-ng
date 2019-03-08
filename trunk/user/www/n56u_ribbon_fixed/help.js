@@ -180,6 +180,12 @@ helpcontent[25] = new Array("",
 				"<#Adm_Svc_dnscrypt_force_dns_desc#>",
 				"<#Adm_Svc_dnscrypt_options_desc#>");
 
+// Shadowsocks
+helpcontent[26] = new  Array("",
+				"<#SHADOWSOCKS_TunnelRemoteHost_desc#>",
+				"<#SHADOWSOCKS_TunnelLocalPort_desc#>",
+				"<#SHADOWSOCKS_ServerObfsParam_desc#>",
+				"<#SHADOWSOCKS_Adv_ProxyMode_desc#>");
 
 function openTooltip(obj, hint_array_id, hint_show_id)
 {

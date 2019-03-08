@@ -351,6 +351,109 @@ start_dns_dhcpd(int is_ap_mode)
 				nvram_safe_get("lan_domain"), nvram_safe_get("computer_name"), nvram_safe_get("lan_domain"));
 	}
 #endif
+#if defined(APP_SHADOWSOCKS)
+	if (!is_ap_mode && nvram_match("ss_enable", "1")) {
+		FILE *fp2, *fp3;
+		char *dns_ip, *gateway_ip, *find, strbuf[256] = {0};
+		int dns_count = 0;
+		int ss_mode = nvram_get_int("ss_mode");
+		unsigned long domain_count = 0, ip_count = 0;
+
+		mkdir_if_none(SHADOWSOCKS_DIR, "777");
+
+		dns_ip = nvram_safe_get("ss_unblocked_sites_dns");
+		gateway_ip = nvram_safe_get("lan_gateway");
+
+		if (ss_mode == 1) {
+			/* gfwlist mode */
+			fprintf(fp, "no-resolv\n"
+					"conf-dir=%s\n", SHADOWSOCKS_DIR);
+
+			if (is_valid_ipv4(dns_ip)) {
+				fprintf(fp, "server=%s\n", dns_ip);
+			} else {
+				dns_ip = nvram_safe_get("lan_dns1");
+				if (is_valid_ipv4(dns_ip)) {
+					fprintf(fp, "server=%s\n", dns_ip);
+					dns_count++;
+				}
+
+				dns_ip = nvram_safe_get("lan_dns2");
+				if (is_valid_ipv4(dns_ip)) {
+					fprintf(fp, "server=%s\n", dns_ip);
+					dns_count++;
+				}
+
+				if (!dns_count && is_valid_ipv4(gateway_ip))
+					fprintf(fp, "server=%s\n", gateway_ip);
+			}
+
+			/* if not exists, then extra GFWLIST_FILE to SHADOWSOCKS_DIR */
+			if (!(fp2 = fopen(SHADOWSOCKS_DIR"/"GFWLIST_FILE, "r"))) {
+				doSystem("tar xzvf /etc_ro/gfwlist.conf.tar.gz -C %s", SHADOWSOCKS_DIR);
+				logmessage(SHADOWSOCKS_LOG_NAME, "/etc_ro/gfwlist.conf.tar.gz has been extracted to %s", SHADOWSOCKS_DIR);
+			} else {
+				logmessage(SHADOWSOCKS_LOG_NAME,  "%s/%s exists, will be not overwrited", SHADOWSOCKS_DIR, GFWLIST_FILE);
+			}
+
+			/* add extra domain to GFWLIST_EXT_DOM_FILE */
+			if ((fp2 = fopen("/etc/storage/shadowsocks/"GFWLIST_EXT_DOM_FILE, "r"))
+					&& (fp3 = fopen(SHADOWSOCKS_DIR"/"GFWLIST_EXT_DOM_FILE, "w"))) {
+				while(fgets(strbuf, sizeof(strbuf), fp2)) {
+					if (strlen(strbuf) > 0) {
+						if ((find = strchr(strbuf, '\n')))
+							*find = '\0';
+						if ((find = strchr(strbuf, '\r')))
+							*find = '\0';
+						fprintf(fp3, "server=/%s/127.0.0.1#%d\n", strbuf, nvram_get_int("ss_tunnel_local_port"));
+						fprintf(fp3, "ipset=/%s/gfwlist\n", strbuf);
+						domain_count++;
+					}
+				}
+				fclose(fp2);
+				fclose(fp3);
+
+				logmessage(SHADOWSOCKS_LOG_NAME, "%s/%s generated, added %ld extra domain(s)", SHADOWSOCKS_DIR, GFWLIST_EXT_DOM_FILE, domain_count);
+			}
+
+			/* add extra ip to gfwlist  */
+			if ((fp2 = fopen("/etc/storage/shadowsocks/"GFWLIST_EXT_IP_FILE, "r"))) {
+				while(fgets(strbuf, sizeof(strbuf), fp2)) {
+					if ((find = strchr(strbuf, '\n')))
+						*find = '\0';
+					if ((find = strchr(strbuf, '\r')))
+						*find = '\0';
+					if (is_valid_ipv4(strbuf)) {
+						doSystem("ipset add gfwlist %s", strbuf);
+						ip_count++;
+					}
+				}
+				fclose(fp2);
+				logmessage(SHADOWSOCKS_LOG_NAME, "%ld ip(s) add to gfwlist", ip_count);
+			}
+
+			/* copy gfwlist-apple-china.conf to SHADOWSOCKS_DIR */
+			if ((fp2 = fopen("/etc/storage/shadowsocks/"GFWLIST_APPLE_CHINA_FILE, "r"))
+					&& (fp3 = fopen(SHADOWSOCKS_DIR"/"GFWLIST_APPLE_CHINA_FILE, "w"))) {
+				while(fgets(strbuf, sizeof(strbuf), fp2)) {
+					fputs(strbuf, fp3);
+				}
+
+				fclose(fp2);
+				fclose(fp3);
+
+				logmessage(SHADOWSOCKS_LOG_NAME, "/etc/storage/shadowsocks/%s has been copied to %s", GFWLIST_APPLE_CHINA_FILE, SHADOWSOCKS_DIR);
+			}
+		} else if (ss_mode == 2) {
+			/* chnroute mode */
+			//TODO
+		} else {
+			/* global mode */
+			fprintf(fp, "no-resolv\n"
+					"server=127.0.0.1#%d\n", nvram_get_int("ss_tunnel_local_port"));
+		}
+	}
+#endif
 	if (!is_ap_mode) {
 		is_dns_used = 1;
 		fprintf(fp, "min-port=%d\n", 4096);

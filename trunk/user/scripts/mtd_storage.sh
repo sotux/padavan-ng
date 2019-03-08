@@ -193,6 +193,7 @@ func_fill()
 	dir_inadyn="$dir_storage/inadyn"
 	dir_crond="$dir_storage/cron/crontabs"
 	dir_wlan="$dir_storage/wlan"
+	dir_shdscks="$dir_storage/shadowsocks"
 
 	script_start="$dir_storage/start_script.sh"
 	script_started="$dir_storage/started_script.sh"
@@ -214,6 +215,9 @@ func_fill()
 	user_sswan_conf="$dir_sswan/strongswan.conf"
 	user_sswan_ipsec_conf="$dir_sswan/ipsec.conf"
 	user_sswan_secrets="$dir_sswan/ipsec.secrets"
+	user_gfwlist_extra_domain_conf="$dir_shdscks/gfwlist-extra-domain.conf"
+	user_gfwlist_extra_ip_conf="$dir_shdscks/gfwlist-extra-ip.conf"
+	user_gfwlist_apple_china_conf="$dir_shdscks/gfwlist-apple-china.conf"
 
 	# create crond dir
 	[ ! -d "$dir_crond" ] && mkdir -p -m 730 "$dir_crond"
@@ -628,6 +632,21 @@ EOF
 EOF
 			chmod 644 "$user_sswan_secrets"
 		fi
+	fi
+
+	# create shadowsocks files
+	[ ! -d "$dir_shdscks" ] && mkdir -p -m 755 "$dir_shdscks"
+	if [ ! -f "$user_gfwlist_extra_domain_conf" ]; then
+		touch "$user_gfwlist_extra_domain_conf"
+		chmod 644 "$user_gfwlist_extra_domain_conf"
+	fi
+	if [ ! -f "$user_gfwlist_extra_ip_conf" ]; then
+		touch "$user_gfwlist_extra_ip_conf"
+		chmod 644 "$user_gfwlist_extra_ip_conf"
+	fi
+	if [ ! -f "$user_gfwlist_apple_china_conf" ]; then
+		touch "$user_gfwlist_apple_china_conf"
+		chmod 644 "$user_gfwlist_extra_ip_conf"
 	fi
 }
 

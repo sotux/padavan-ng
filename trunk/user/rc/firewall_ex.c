@@ -1322,6 +1322,42 @@ ipt_mangle_rules(const char *man_if, const char *wan_if, int use_man)
 			fprintf(fp, "-A %s -i %s -p udp -d 224.0.0.0/4 -j TTL %s %d\n", dtype, viptv_if, "--ttl-inc", 1);
 	}
 
+#if defined(APP_SHADOWSOCKS)
+	module_smart_load("xt_TPROXY", NULL);
+	module_smart_load("xt_set", NULL);
+	module_smart_load("ip_set_hash_ip", NULL);
+	module_smart_load("iptable_mangle", NULL);
+
+	doSystem("ip rule del fwmark 0x01/0x01 lookup 100");
+	doSystem("ip route del local default dev lo table 100");
+	doSystem("ipset destroy gfwlist");
+
+	if (nvram_match("ss_enable", "1") && nvram_match("ss_udp", "1") && !get_ap_mode()) {
+		int i_ss_mode = nvram_get_int("ss_mode");
+		int i_ss_local_port = nvram_get_int("ss_local_port");
+
+		doSystem("ipset -! create gfwlist hash:ip");
+		doSystem("ip route add local default dev lo table 100");
+		doSystem("ip rule add fwmark 0x01/0x01 lookup 100");
+
+		fprintf(fp, ":%s - [0:0]\n", "shadowsocks");
+		fprintf(fp, "-A PREROUTING -j %s\n", "shadowsocks");
+
+		if (i_ss_mode == 1)
+			/* gfwlist mode */
+			fprintf(fp, "-A %s -p udp -m set --match-set gfwlist dst -m udp ! --dport 53 -j %s --on-port %d --on-ip 0.0.0.0 --tproxy-mark 0x1/0x1\n", "shadowsocks", "TPROXY", i_ss_local_port);
+		else if (i_ss_mode == 2)
+			/* chnroute mode */
+			//TODO
+			logmessage(SHADOWSOCKS_LOG_NAME, "ChnRoute mode is not suppported yet");
+		else
+			/* global mode */
+			fprintf(fp, "-A %s -p udp -m udp ! --dport 53 -j %s --on-port %d --on-ip 0.0.0.0 --tproxy-mark 0x1/0x1\n", "shadowsocks", "TPROXY", i_ss_local_port);
+
+		logmessage(SHADOWSOCKS_LOG_NAME, "firewall rules for mangle have been generated");
+	}
+#endif
+
 	fprintf(fp, "COMMIT\n\n");
 	fclose(fp);
 
@@ -1910,6 +1946,62 @@ ipt_nat_rules(char *man_if, char *man_ip,
 				if (wport != lport || is_use_dmz)
 					fprintf(fp, "-A %s -p tcp --dport %d -j DNAT --to-destination %s:%d\n",
 							dtype, wport, lan_ip, lport);
+			}
+#endif
+#if defined(APP_SHADOWSOCKS)
+			module_smart_load("xt_set", NULL);
+			module_smart_load("ip_set_hash_ip", NULL);
+			module_smart_load("ip_set_hash_net", NULL);
+			doSystem("ipset destroy gfwlist");
+			doSystem("ipset destroy specips");
+
+			if (nvram_match("ss_enable", "1") && !get_ap_mode()) {
+				const char *spec_ips[] = {
+						"0.0.0.0/8",       "10.0.0.0/8",     "100.64.0.0/10",      "127.0.0.0/8",
+						"169.254.0.0/16",  "172.16.0.0/12",  "192.0.0.0/24",       "192.0.2.0/24",
+						"192.31.196.0/24", "192.52.193.0/24","192.88.99.0/24",     "192.168.0.0/16",
+						"192.175.48.0/24", "198.18.0.0/15",  "198.51.100.0/24",    "203.0.113.0/24",
+						"224.0.0.0/4",     "240.0.0.0/4",    "255.255.255.255/32", ""};
+				char *ss_server = nvram_safe_get("ss_server");
+				int i_ss_mode = nvram_get_int("ss_mode");
+				int i_ss_chromecast = nvram_get_int("ss_chromecast");
+				int i_ss_local_port = nvram_get_int("ss_local_port");
+				int i_ss_router_proxy = nvram_get_int("ss_router_proxy");
+				int idx = 0;
+
+				if (is_valid_ipv4(ss_server)) {
+					if (i_ss_chromecast) {
+						fprintf(fp, "-A %s -d %s -p udp -m udp --dport 53 -j %s --to-ports 53\n", "PREROUTING", "8.8.8.8/32", "REDIRECT");
+						fprintf(fp, "-A %s -d %s -p udp -m udp --dport 53 -j %s --to-ports 53\n", "PREROUTING", "8.8.4.4/32", "REDIRECT");
+					}
+
+					doSystem("ipset -! create gfwlist hash:ip");
+
+					fprintf(fp, ":%s - [0:0]\n", "shadowsocks");
+					fprintf(fp, "-A PREROUTING -p tcp -j %s\n", "shadowsocks");
+					if (i_ss_router_proxy)
+						fprintf(fp, "-A OUTPUT -p tcp -j %s\n", "shadowsocks");
+
+					doSystem("ipset -! create specips hash:net timeout 0");
+					doSystem("ipset add specips %s", ss_server);
+					while(strlen(spec_ips[idx])) {
+						doSystem("ipset add specips %s", spec_ips[idx++]);
+					}
+					fprintf(fp, "-A %s -m set --match-set specips dst -j %s\n", "shadowsocks", "RETURN");
+
+					if (i_ss_mode == 1)
+						/* gfwlist mode */
+						fprintf(fp, "-A %s -p tcp -m set --match-set gfwlist dst -j %s --to-ports %d\n", "shadowsocks", "REDIRECT", i_ss_local_port);
+					else if (i_ss_mode == 2)
+						/* chnroute mode */
+						//TODO
+						logmessage(SHADOWSOCKS_LOG_NAME, "ChnRoute mode is not suppported yet");
+					else
+						/* global mode */
+						fprintf(fp, "-A %s -p tcp -j %s --to-ports %d\n", "shadowsocks", "REDIRECT", i_ss_local_port);
+
+					logmessage(SHADOWSOCKS_LOG_NAME, "firewall rules for nat have been generated");
+				}
 			}
 #endif
 			lport = nvram_get_int("udpxy_enable_x");

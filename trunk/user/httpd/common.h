@@ -90,6 +90,7 @@ typedef u_int8_t u8;
 #define EVM_RESTART_DNSCRYPT		(1ULL << 45)
 #define EVM_RESTART_ZRAM		(1ULL << 46)
 #define EVM_RESTART_VLMCSD		(1ULL << 47)
+#define EVM_RESTART_SHADOWSOCKS	(1ULL << 48)
 #define EVM_RESTART_REBOOT		(1ULL << 62)
 
 #define EVM_BLOCK_UNSAFE		(1ULL << 63) /* special case */
@@ -146,6 +147,7 @@ typedef u_int8_t u8;
 #define EVT_RESTART_DNSCRYPT		1
 #define EVT_RESTART_ZRAM		1
 #define EVT_RESTART_VLMCSD		1
+#define EVT_RESTART_SHADOWSOCKS	1
 #define EVT_RESTART_REBOOT		40
 
 struct variable

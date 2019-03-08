@@ -177,6 +177,10 @@ ifeq ($(CONFIG_FIRMWARE_INCLUDE_ARIA),y)
 	cd $(INSTALLDIR)/sbin && ln -sf rc run_aria
 	cd $(INSTALLDIR)/sbin && ln -sf rc stop_aria
 endif
+ifeq ($(CONFIG_FIRMWARE_INCLUDE_SHADOWSOCKS),y)
+	cd $(INSTALLDIR)/sbin && ln -sf rc run_shadowsocks
+	cd $(INSTALLDIR)/sbin && ln -sf rc stop_shadowsocks
+endif
 endif
 ifeq ($(STORAGE_ENABLED),y)
 	cd $(INSTALLDIR)/sbin && ln -sf rc ejall
