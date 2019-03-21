@@ -353,7 +353,7 @@ start_dns_dhcpd(int is_ap_mode)
 #endif
 #if defined(APP_SHADOWSOCKS)
 	if (!is_ap_mode && nvram_match("ss_enable", "1")) {
-		FILE *fp2, *fp3;
+		FILE *fp2 = NULL, *fp3 = NULL;
 		char *dns_ip, *gateway_ip, *find, strbuf[256] = {0};
 		int dns_count = 0;
 		int ss_mode = nvram_get_int("ss_mode");
@@ -393,6 +393,8 @@ start_dns_dhcpd(int is_ap_mode)
 				doSystem("tar xzvf /etc_ro/gfwlist.conf.tar.gz -C %s", SHADOWSOCKS_DIR);
 				logmessage(SHADOWSOCKS_LOG_NAME, "/etc_ro/gfwlist.conf.tar.gz has been extracted to %s", SHADOWSOCKS_DIR);
 			} else {
+				fclose(fp2);
+				fp2 = NULL;
 				logmessage(SHADOWSOCKS_LOG_NAME,  "%s/%s exists, will be not overwrited", SHADOWSOCKS_DIR, GFWLIST_FILE);
 			}
 
@@ -410,10 +412,15 @@ start_dns_dhcpd(int is_ap_mode)
 						domain_count++;
 					}
 				}
-				fclose(fp2);
-				fclose(fp3);
-
 				logmessage(SHADOWSOCKS_LOG_NAME, "%s/%s generated, added %ld extra domain(s)", SHADOWSOCKS_DIR, GFWLIST_EXT_DOM_FILE, domain_count);
+			}
+			if (fp2) {
+				fclose(fp2);
+				fp2 = NULL;
+			}
+			if (fp3) {
+				fclose(fp3);
+				fp3 = NULL;
 			}
 
 			/* add extra ip to gfwlist  */
@@ -429,6 +436,7 @@ start_dns_dhcpd(int is_ap_mode)
 					}
 				}
 				fclose(fp2);
+				fp2 = NULL;
 				logmessage(SHADOWSOCKS_LOG_NAME, "%ld ip(s) add to gfwlist", ip_count);
 			}
 
@@ -438,12 +446,17 @@ start_dns_dhcpd(int is_ap_mode)
 				while(fgets(strbuf, sizeof(strbuf), fp2)) {
 					fputs(strbuf, fp3);
 				}
-
-				fclose(fp2);
-				fclose(fp3);
-
 				logmessage(SHADOWSOCKS_LOG_NAME, "/etc/storage/shadowsocks/%s has been copied to %s", GFWLIST_APPLE_CHINA_FILE, SHADOWSOCKS_DIR);
 			}
+			if (fp2) {
+				fclose(fp2);
+				fp2 = NULL;
+			}
+			if (fp3) {
+				fclose(fp3);
+				fp3 = NULL;
+			}
+
 		} else if (ss_mode == 2) {
 			/* chnroute mode */
 			//TODO
