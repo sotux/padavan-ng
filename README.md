@@ -19,3 +19,10 @@ Contributors of this project are not responsible for what happens next.
 
 P.S.
 Original project author is Padavan. Old repository here: [rt-n56u project](https://bitbucket.org/padavan/rt-n56u)
+
+### Build preparation on Ubuntu 18.04 ###
+
+~~~
+sudo apt-get update
+sudo apt-get install autoconf automake autopoint bison build-essential flex gawk gettext git gperf libtool pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev texinfo python-docutils subversion cmake
+~~~
