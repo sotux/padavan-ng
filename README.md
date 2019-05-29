@@ -24,5 +24,5 @@ Original project author is Padavan. Old repository here: [rt-n56u project](https
 
 ~~~bash
 sudo apt-get update
-sudo apt-get install autoconf automake autopoint bison build-essential flex gawk gettext git gperf libtool pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev texinfo python-docutils subversion cmake unzip help2man libtool-bin libncurses5-dev
+sudo apt-get install autoconf automake autopoint bison build-essential flex gawk gettext git gperf libtool pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev texinfo python-docutils subversion cmake unzip help2man libtool-bin libncurses5-dev libltdl-dev
 ~~~
