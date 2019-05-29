@@ -1,5 +1,5 @@
-SRC_NAME=shadowsocks-libev-3.2.4
-ARCHIVE_NAME=shadowsocks-libev-3.2.4
+SRC_NAME=shadowsocks-libev-3.2.5
+ARCHIVE_NAME=shadowsocks-libev-3.2.5
 THISDIR = $(shell pwd)
 
 all: config_test
