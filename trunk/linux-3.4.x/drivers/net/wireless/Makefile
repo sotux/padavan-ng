@@ -11,7 +11,7 @@ obj-$(CONFIG_AIRO)		+= airo.o
 obj-$(CONFIG_AIRO_CS)		+= airo_cs.o airo.o
 
 obj-$(CONFIG_ATMEL)             += atmel.o
-obj-$(CONFIG_PCI_ATMEL)         += atmel_pci.o 
+obj-$(CONFIG_PCI_ATMEL)         += atmel_pci.o
 obj-$(CONFIG_PCMCIA_ATMEL)      += atmel_cs.o
 
 obj-$(CONFIG_AT76C50X_USB)      += at76c50x-usb.o
@@ -71,5 +71,6 @@ obj-$(CONFIG_MT7610_AP)		+= ralink/mt7610_ap/
 obj-$(CONFIG_MT76X2_AP)		+= ralink/mt76x2_ap/
 obj-$(CONFIG_MT76X3_AP)		+= ralink/mt76x3_ap/
 obj-$(CONFIG_MT7628_AP)		+= ralink/mt7628_ap/
+obj-$(CONFIG_MT7615_AP)		+= ralink/mt7615_ap/
 obj-$(CONFIG_RT3352_INIC_MII)	+= ralink/rt3352_mii/
 
